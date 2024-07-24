@@ -19,4 +19,18 @@ contract BankAccount {
     function getBalance() public view returns (uint) {
         return _balance[msg.sender];
     }
+
+    function payUser(address payable _address, uint _amount) public payable {
+        require(_balance[msg.sender] >= _amount, "Insufficient funds.");
+        _balance[msg.sender] -= _amount;
+        _balance[_address] += _amount;
+    }
+
+    function transferToWallet(address payable _address, uint _amount) public payable {
+        require(_balance[msg.sender] >= _amount, "Insufficient funds.");
+        (bool sent, bytes memory data) = _address.call{value: _amount}("");
+        if(sent) {
+            _balance[msg.sender] -= _amount;
+        }
+    }
 }
